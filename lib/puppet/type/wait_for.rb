@@ -366,9 +366,8 @@ Puppet::Type.newtype(:wait_for) do
   end
 
   validate do
-    # We either wait for some seconds, for a command (query) to return a
-    # specific (set of) exit code(s) or for a path on the filesystem to
-    # exist (or not)
+    # We either wait for some seconds, execute a command (query) or check a
+    # path on the filesystem
     if ((self[:seconds] and not self[:path].nil?) or
         (self[:seconds] and not self[:query].nil?) or
         (not self[:query].nil? and not self[:path].nil?))
@@ -388,13 +387,12 @@ Puppet::Type.newtype(:wait_for) do
       end
     end
 
-    # If a path was provided, we also expect a state and (if state is "present")
-    # a type to check for
+    # If a path was provided, we also expect a state...
     if self[:path]
       unless self[:state]
         fail "Attribute state is required together with path."
       end
-      # We also don't want regex or exit_code in this case
+      # ...but no regex or exit_code
       if self[:regex] or self[:exit_code]
         fail "Attributes regex and exit_code are not allowed with path."
       end
